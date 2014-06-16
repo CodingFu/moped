@@ -25,8 +25,11 @@ module Moped
           encode(Moped::BSON::UTF8_ENCODING).force_encoding(Moped::BSON::BINARY_ENCODING)
         rescue EncodingError
           data = dup.force_encoding(Moped::BSON::UTF8_ENCODING)
-          raise unless data.valid_encoding?
-          data.force_encoding(Moped::BSON::BINARY_ENCODING)
+          if data.valid_encoding?
+            data.force_encoding(Moped::BSON::BINARY_ENCODING)
+          else
+            encode(Moped::BSON::UTF8_ENCODING, undef: :replace).force_encoding(Moped::BSON::BINARY_ENCODING)
+          end
         end
 
         def from_utf8_binary
